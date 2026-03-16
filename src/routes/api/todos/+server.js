@@ -4,8 +4,11 @@ import { task } from '$lib/server/db/schema';
 // get *default* https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/GET
 // return data or get data from the server
 // get parameters in the url mostly query search params
-export const GET = () => {
-    return new Response(JSON.stringify({ message: 'Hello Edrick' }));
+export const GET = async () => {
+    const tasks = await db.select().from(task);
+    return new Response(JSON.stringify(tasks), {
+        headers: { 'Content-Type': 'application/json' }
+    });
 }
 
 // create https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/POST
@@ -19,7 +22,7 @@ export const POST = async ({ request }) => {
         title: data.title,
         description: data.description,
         priority: data.priority
-    });
+    }).returning();
     return new Response(JSON.stringify({ message: 'Hello Created', todo: newTodo }));
 }
 
