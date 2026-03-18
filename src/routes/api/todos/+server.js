@@ -1,6 +1,7 @@
 import { db } from '$lib/server/db'
 import { task } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+// import type { _catch } from 'better-auth';
+import { eq } from 'drizzle-orm';  
 
 // get *default* https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/GET
 // return data or get data from the server
@@ -59,6 +60,25 @@ export const PUT = async ({ request, url }) => {
 
 // delete https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/DELETE
 // get query params -> in the url
-export const DELETE = () => {
-    return new Response(JSON.stringify({ message: 'Hello Delete' }));
-}
+/** @type {import('./$types').RequestHandler} */
+    export const DELETE = async ({ url }) => {
+        const taskId = url.searchParams.get('id');
+
+        if (!taskId) {
+            return new Response(JSON.stringify({ error: 'Task ID is required' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+     try {
+        await db.delete(task).where(eq(task.id, taskId));
+        return new Response(JSON.stringify({ message: 'Task deleted' }), {
+            headers: { 'Content-Type': 'application/json' }
+        });
+    } catch (error) {
+        return new Response(JSON.stringify({ error: 'Failed to delete task' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+}; 
