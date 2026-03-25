@@ -3,6 +3,12 @@
 
   let todos: any[] = [];
   let loading = true;
+  let editingId: string | null = null;
+  let editForm = {
+    title: '',
+    description: '',
+    priority: 0
+  };
 
   const getTodos = async () => {
     const response = await fetch('/api/todos');
@@ -60,6 +66,27 @@
     getTodos();
   }
 
+  const startEdit = (todo: any) => {
+    editingId = todo.id;
+    editForm = {
+      title: todo.title,
+      description: todo.description,
+      priority: todo.priority
+    };
+  }
+
+  const cancelEdit = () => {
+    editingId = null;
+    editForm = { title: '', description: '', priority: 0 };
+  }
+
+  const saveEdit = async () => {
+    if (editingId) {
+      await updateTodo(editingId, editForm);
+      cancelEdit();
+    }
+  }
+
 </script>
 
 <h1>Todos CRUD</h1>
@@ -80,15 +107,42 @@
   <ul class="todos-list">
     {#each todos as todo}
       <li class="todo-item">
-        <div class="todo-content">
-          <h3>{todo.title}</h3>
-          <p>{todo.description}</p>
-          <span class="priority">Priority: {todo.priority}</span>
-        </div>
-        <div class="todo-actions">
-          <button onclick={() => deleteTodo(todo.id)}>Delete</button>
-          <button onclick={() => updateTodo(todo.id, { title: "actualizado", description: todo.description, priority: todo.priority })}>Update</button>
-        </div>
+        {#if editingId === todo.id}
+          <div class="todo-edit-form">
+            <input
+              class="edit-input"
+              type="text"
+              bind:value={editForm.title}
+              placeholder="Title"
+            />
+            <input
+              class="edit-input"
+              type="text"
+              bind:value={editForm.description}
+              placeholder="Description"
+            />
+            <input
+              class="edit-input"
+              type="number"
+              bind:value={editForm.priority}
+              placeholder="Priority"
+            />
+            <div class="edit-actions">
+              <button class="btn-save" onclick={saveEdit}>Guardar</button>
+              <button class="btn-cancel" onclick={cancelEdit}>Cancelar</button>
+            </div>
+          </div>
+        {:else}
+          <div class="todo-content">
+            <h3>{todo.title}</h3>
+            <p>{todo.description}</p>
+            <span class="priority">Priority: {todo.priority}</span>
+          </div>
+          <div class="todo-actions">
+            <button onclick={() => deleteTodo(todo.id)}>Delete</button>
+            <button onclick={() => startEdit(todo)}>Editar</button>
+          </div>
+        {/if}
       </li>
     {/each}
   </ul>
@@ -108,6 +162,14 @@
     border: 1px solid #ccc;
     border-radius: 4px;
   }
+
+  /* #path {
+  color: rgb(0, 0, 0);
+  display: block;
+  padding: 0.25rem 0.5rem;
+  margin-top: 0.5rem;
+  margin-left: auto;
+} */
 
   .button {
     padding: 0.5rem 1rem;
@@ -152,6 +214,7 @@
 
   .todo-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
   }
 
@@ -166,5 +229,53 @@
 
   .todo-actions button:hover {
     background-color: #e0e0e0;
+  }
+
+  .todo-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .edit-input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.875rem;
+  }
+
+  .edit-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .btn-save {
+    padding: 0.5rem 1rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  .btn-save:hover {
+    background-color: #218838;
+  }
+
+  .btn-cancel {
+    padding: 0.5rem 1rem;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  .btn-cancel:hover {
+    background-color: #c82333;
   }
 </style>
