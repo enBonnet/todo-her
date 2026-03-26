@@ -12,7 +12,9 @@
 
   const getTodos = async () => {
     const response = await fetch('/api/todos');
-    todos = await response.json();
+    const data = await response.json();
+    //no mutar el estado directamente trabajar sobre la copia
+    todos = [...data].sort((a: any, b: any) => b.priority - a.priority);
     loading = false;
   }
 

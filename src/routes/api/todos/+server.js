@@ -26,7 +26,7 @@ export const POST = async ({ request }) => {
         priority: data.priority
     }).returning();
     return new Response(JSON.stringify({ message: 'Hello Created', todo: newTodo }));
-}
+    } 
 
 // update https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/PUT
 // get parameters in the url mostly query search params
@@ -55,7 +55,9 @@ export const PUT = async ({ request, url }) => {
     
     return new Response(JSON.stringify({ message: 'Task updated', task: updatedTask }), {
         headers: { 'Content-Type': 'application/json' }
+        
     });
+    
 }
 
 // delete https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/DELETE
