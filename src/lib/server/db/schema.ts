@@ -1,4 +1,4 @@
-import { pgTable, text, integer } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer , smallint } from 'drizzle-orm/pg-core';
 
 export const task = pgTable('task', {
 	id: text('id')
