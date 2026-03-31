@@ -20,6 +20,15 @@ export const GET = async () => {
 /** @type {import('./$types').RequestHandler} */
 export const POST = async ({ request }) => {
     const data = await request.json();
+    
+    // Validar que priority esté entre 0 y 10
+    if (data.priority !== undefined && (data.priority < 0 || data.priority > 10)) {
+        return new Response(JSON.stringify({ error: 'Priority must be between 0 and 10' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+    
     const newTodo = await db.insert(task).values({
         title: data.title,
         description: data.description,
@@ -43,6 +52,14 @@ export const PUT = async ({ request, url }) => {
     }
     
     const data = await request.json();
+    
+    // Validar que priority esté entre 0 y 10
+    if (data.priority !== undefined && (data.priority < 0 || data.priority > 10)) {
+        return new Response(JSON.stringify({ error: 'Priority must be between 0 and 10' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
     
     const updatedTask = await db.update(task)
         .set({

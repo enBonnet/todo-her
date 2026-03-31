@@ -10,13 +10,19 @@
     priority: 0
   };
 
-  const getTodos = async () => {
-    const response = await fetch('/api/todos');
-    const data = await response.json();
-    //no mutar el estado directamente trabajar sobre la copia
-    todos = [...data].sort((a: any, b: any) => b.priority - a.priority);
-    loading = false;
-  }
+   const getTodos = async () => {
+     const response = await fetch('/api/todos');
+     const data = await response.json();
+     // Check for duplicate titles
+     const titles: string[] = data.map((todo: any) => todo.title);
+     const duplicates = titles.filter((title, index) => titles.indexOf(title) !== index);
+     if (duplicates.length > 0) {
+       alert("This title has already been entered");
+     }
+     //no mutar el estado directamente trabajar sobre la copia
+     todos = [...data].sort((a: any, b: any) => b.priority - a.priority);
+     loading = false;
+   }
 
   onMount(() =>{
     getTodos();
@@ -45,6 +51,11 @@
       description: formData.get('description') as string,
       priority: parseInt(formData.get('priority') as string, 10)
     };
+
+    if (todoData.priority < 0 || todoData.priority > 10) {
+      alert('Priority must be between 0 and 10');
+      return;
+    }
 
     createTodo(todoData);
     form.reset();
@@ -98,8 +109,8 @@
   <input class="input" required type="text" name="title" placeholder="Title" />
   <label class="label" for="description">Description</label>
   <input class="input" type="text" name="description" placeholder="Description" />
-  <label class="label" for="priority">Priority</label>
-  <input class="input" required type="number" name="priority" placeholder="Priority" />
+  <label class="label" for="priority">Priority (0-10)</label>
+  <input class="input" required type="number" name="priority" min="0" max="10" placeholder="Priority (0-10)" />
   <button class="button" type="submit">Create</button>
 </form>
 
@@ -126,8 +137,10 @@
             <input
               class="edit-input"
               type="number"
+              min="0"
+              max="10"
               bind:value={editForm.priority}
-              placeholder="Priority"
+              placeholder="Priority (0-10)"
             />
             <div class="edit-actions">
               <button class="btn-save" onclick={saveEdit}>Guardar</button>
@@ -281,4 +294,3 @@
     background-color: #c82333;
   }
 </style>
-<!--aprendi a colocar emojis en la terminal
