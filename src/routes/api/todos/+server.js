@@ -29,6 +29,15 @@ export const POST = async ({ request }) => {
         });
     }
     
+    // Verificar si el título ya existe
+    const existingTodo = await db.select().from(task).where(eq(task.title, data.title));
+    if (existingTodo.length > 0) {
+        return new Response(JSON.stringify({ error: 'Title already exists' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+    
     const newTodo = await db.insert(task).values({
         title: data.title,
         description: data.description,
@@ -59,6 +68,17 @@ export const PUT = async ({ request, url }) => {
             status: 400,
             headers: { 'Content-Type': 'application/json' }
         });
+    }
+    
+    // Verificar si el título ya existe (excluyendo el actual)
+    if (data.title) {
+        const existingTodo = await db.select().from(task).where(eq(task.title, data.title));
+        if (existingTodo.length > 0 && existingTodo[0].id !== taskId) {
+            return new Response(JSON.stringify({ error: 'Title already exists' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
     }
     
     const updatedTask = await db.update(task)

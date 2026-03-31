@@ -10,19 +10,13 @@
     priority: 0
   };
 
-   const getTodos = async () => {
-     const response = await fetch('/api/todos');
-     const data = await response.json();
-     // Check for duplicate titles
-     const titles: string[] = data.map((todo: any) => todo.title);
-     const duplicates = titles.filter((title, index) => titles.indexOf(title) !== index);
-     if (duplicates.length > 0) {
-       alert("This title has already been entered");
-     }
-     //no mutar el estado directamente trabajar sobre la copia
-     todos = [...data].sort((a: any, b: any) => b.priority - a.priority);
-     loading = false;
-   }
+    const getTodos = async () => {
+      const response = await fetch('/api/todos');
+      const data = await response.json();
+      //no mutar el estado directamente trabajar sobre la copia
+      todos = [...data].sort((a: any, b: any) => b.priority - a.priority);
+      loading = false;
+    }
 
   onMount(() =>{
     getTodos();
@@ -36,6 +30,7 @@
       },
       body: JSON.stringify(formData)
     });
+    
     const data = await response.json();
     console.log(data);
     getTodos();
