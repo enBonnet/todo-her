@@ -23,7 +23,19 @@
   })
 
   const createTodo = async (formData: { title: string; description: string; priority: number }) => {
-    const response = await fetch('/api/todos', {
+    
+    // Check if title already exists
+    /**
+    const response = await fetch('/api/todos');
+    const existingTodos = await response.json();
+    const titleExists = existingTodos.some((todo: any) => todo.title === formData.title);
+    if (titleExists) {
+      alert('tittle alresy exist');
+      return;
+    }
+      **/
+
+    const responsePost = await fetch('/api/todos', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -31,7 +43,10 @@
       body: JSON.stringify(formData)
     });
     
-    const data = await response.json();
+    const data = await responsePost.json();
+    if (data.error){
+      alert(data.error)
+    }
     console.log(data);
     getTodos();
   }
