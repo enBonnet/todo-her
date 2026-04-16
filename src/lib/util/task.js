@@ -8,17 +8,11 @@ import { eq } from 'drizzle-orm';
     @param {Object} params  
     @param {string} params[].title
 **/
-export const duplicateTittle = async ({title}) => {
+export const duplicateTitle = async ({title}) => {
     const existingTodo = await db.select().from(task).where(eq(task.title, title));
-    return false
+    
     return existingTodo.length > 0
 
-    if (existingTodo.length > 0) {
-        return true        
-     }
-     else {
-        return false 
-     }
     }
 
    

@@ -2,7 +2,7 @@ import { db } from '$lib/server/db'
 import { task } from '$lib/server/db/schema';
 // import type { _catch } from 'better-auth';
 import { eq } from 'drizzle-orm'; 
-import {duplicateTittle} from '$lib/util/task';
+import {duplicateTitle} from '$lib/util/task';
 
 
 // get *default* https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/GET
@@ -32,7 +32,7 @@ export const POST = async ({ request }) => {
     }
     
     // Verificar si el título ya existe
-    const duplicate = await duplicateTittle({title:data.title});
+    const duplicate = await duplicateTitle({title:data.title});
     if (duplicate ) {
         return new Response(JSON.stringify({ error: 'Title already exists' }), {
             status: 400,
