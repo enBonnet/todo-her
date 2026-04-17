@@ -18,9 +18,13 @@ export const duplicateTitle = async ({ title }) => {
     importar un [ne] de drizle y un and pero aun no lo entiendo
     */
 
+/**
+  @param {{title?: string, description?: string, priority?: number}} data
+**/
 // limpiar espacios en blancos
+
 export const sanitizeInput = (data) => {
-	if (!data || !data.title) return data;
-	data.title = data.title.trim().replace(/\s+/g, ' ');
-	return data;
+	if (!data) return null;
+	const title = data.title?.trim().replace(/\s+/g, ' ') || '';
+	return { ...data, title };
 };
