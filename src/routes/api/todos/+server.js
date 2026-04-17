@@ -2,7 +2,8 @@ import { db } from '$lib/server/db'
 import { task } from '$lib/server/db/schema';
 // import type { _catch } from 'better-auth';
 import { eq } from 'drizzle-orm'; 
-import {duplicateTitle} from '$lib/util/task';
+import {duplicateTitle, sanitizeInput} from '$lib/util/task';
+
 
 
 // get *default* https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/GET
@@ -31,8 +32,17 @@ export const POST = async ({ request }) => {
         });
     }
     
+    // Limpiar los espacios
+    const sanitize =  sanitizeInput({title:data.title});
+    if (!sanitize){ 
+         return new Response(JSON.stringify({ error: 'Title already exists' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
     // Verificar si el título ya existe
-    const duplicate = await duplicateTitle({title:data.title});
+    const duplicate = await duplicateTitle({title:sanitize.title});
     if (duplicate ) {
         return new Response(JSON.stringify({ error: 'Title already exists' }), {
             status: 400,
@@ -41,7 +51,7 @@ export const POST = async ({ request }) => {
     }
     
     const newTodo = await db.insert(task).values({
-        title: data.title,
+        title: sanitize.title,
         description: data.description,
         priority: data.priority
     }).returning();
