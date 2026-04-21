@@ -87,7 +87,7 @@ export const PUT = async ({ request, url }) => {
 	// aca tengo la funcion pero no me esta validando el excludeId porq en la funcion de utilidad aun no lo declaro
 	// Verificar si el título ya existe (excluyendo el actual)
 	if (sanitize.title) {
-		const duplicate = await duplicateTitle({ title: sanitize.title });
+		const duplicate = await duplicateTitle({ title: sanitize.title, excludeId: taskId });
 		if (duplicate) {
 			return new Response(JSON.stringify({ error: 'Title already exists' }), {
 				status: 400,
